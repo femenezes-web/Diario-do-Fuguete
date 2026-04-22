@@ -32,7 +32,7 @@ export default function App() {
     }
 
     entries.forEach((entry, idx) => {
-      const pageWeightLimit = 900; // Lowered to ensure text doesn't hit the bottom
+      const pageWeightLimit = 800; // Even more conservative to avoid overflow
       let entryText = entry.texto;
       let chunkIdx = 0;
       
@@ -44,7 +44,7 @@ export default function App() {
         for (let i = 0; i < entryText.length; i++) {
           weightedLength += 1;
           if (entryText[i] === '\n') {
-            weightedLength += 60; // Increased penalty for line breaks to save vertical space
+            weightedLength += 75; // Increased penalty to account for dialogue margins
           }
 
           if (weightedLength > pageWeightLimit) {
@@ -316,7 +316,7 @@ function PageContent({ page, pageNumber, isLeft, goToEntry }: { page: any, pageN
             <h2 className="text-xs uppercase tracking-[0.2em] text-[#8c7e60] mb-2 font-sans">2006 — Noites Inesquecíveis</h2>
             <h1 className="text-3xl font-bold text-[#3d2b1f] tracking-tight">Prefácio</h1>
           </header>
-          <div className="flex-1 text-[#2c1e14] leading-relaxed space-y-4 text-sm md:text-base text-justify">
+          <div className="flex-1 text-[#2c1e14] leading-relaxed space-y-4 text-sm md:text-base text-justify overflow-y-auto custom-scrollbar pr-1">
              <p>Este livro não é apenas uma coletânea de textos digitais; é o registro de uma época. Quando criei este espaço, o mundo parecia girar em um ritmo diferente. Entre um café e outro em Londrina, as palavras fluíam como as trilhas sonoras que marcaram nossas vidas.</p>
              <p>Ao ler estas páginas, é preciso considerar o contexto de quem eramos. Naquela época, a vida era vivida com uma certa inconsequência, talvez com alguns excessos de bebidas e noites que pareciam não ter fim. Eram outros tempos, outras intensidades. Hoje, o olhar é diferente. A maturidade trouxe um novo ritmo, mas as memórias daqueles excessos e daquela liberdade ainda vibram nestes textos como um registro honesto de uma fase que passou, mas que foi essencial para nos tornarmos quem somos agora.</p>
           </div>
@@ -332,7 +332,7 @@ function PageContent({ page, pageNumber, isLeft, goToEntry }: { page: any, pageN
             <h2 className="text-[10px] md:text-xs uppercase tracking-[0.1em] text-[#8c7e60] mb-2 font-sans italic">Memórias Digitais</h2>
             <h1 className="text-2xl md:text-3xl font-bold text-[#3d2b1f] tracking-tight">Índice</h1>
           </header>
-          <nav className="flex-1 overflow-y-auto no-scrollbar pb-12">
+          <nav className="flex-1 overflow-y-auto custom-scrollbar pb-12">
             <ul className="space-y-1 md:space-y-2">
               {page.indexEntries.map((entry: any, idx: number) => {
                 const globalIdx = page.startIndex + idx;
@@ -403,7 +403,7 @@ function PageContent({ page, pageNumber, isLeft, goToEntry }: { page: any, pageN
                <span className="text-[10px] text-[#8c7e60]">FGT</span>
             </div>
           </header>
-          <main className="flex-1 leading-relaxed text-[#2c1e14] overflow-y-auto no-scrollbar text-sm md:text-base selection:bg-[#8b0000]/10">
+          <main className="flex-1 leading-relaxed text-[#2c1e14] overflow-y-auto custom-scrollbar text-sm md:text-base selection:bg-[#8b0000]/10">
             {!page.isContinuation && (
               <h3 className="text-2xl font-bold mb-3 italic tracking-tight">{page.title}</h3>
             )}
