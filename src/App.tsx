@@ -108,7 +108,16 @@ export default function App() {
 
   const goToEntry = (entryIdx: number) => {
     const pageIndex = pages.findIndex((p: any) => p.type === 'entry' && p.originalIndex === entryIdx);
-    if (pageIndex !== -1) setCurrentPage(pageIndex);
+    if (pageIndex !== -1) {
+      if (isMobile) {
+        setCurrentPage(pageIndex);
+        setPage([pageIndex, 0]);
+      } else {
+        const rightPageIndex = pageIndex % 2 === 0 ? pageIndex : pageIndex + 1;
+        setCurrentPage(rightPageIndex);
+        setPage([rightPageIndex, 0]);
+      }
+    }
   };
 
   const variants = {
@@ -131,8 +140,9 @@ export default function App() {
   const [[page, direction], setPage] = useState([0, 0]);
 
   const paginate = (newDirection: number) => {
-    const next = currentPage + newDirection;
-    if (next >= 0 && next < pages.length) {
+    const step = isMobile ? 1 : 2;
+    const next = currentPage + (newDirection * step);
+    if (next >= 0 && next < pages.length + (isMobile ? 0 : 1)) {
       setPage([next, newDirection]);
       setCurrentPage(next);
     }
@@ -165,11 +175,28 @@ export default function App() {
 
         {/* LEFT PAGE (N-1) - Hidden on Mobile */}
         <div 
-          className="hidden md:flex md:w-1/2 h-full bg-[#f2e8c9] border-r border-black/10 relative px-8 md:px-12 py-8 md:pt-10 md:pb-16 flex-col"
+          className="hidden md:flex md:w-1/2 h-full bg-[#f2e8c9] border-r border-black/10 relative overflow-hidden md:rounded-l-lg"
           style={{ boxShadow: 'inset -20px 0 30px -10px rgba(0,0,0,0.2)' }}
         >
-          <div className="absolute inset-0 opacity-40 pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"n\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23n)\" opacity=\"0.05\"/%3E%3C/svg%3E')" }}></div>
-          <PageContent page={pages[currentPage - 1]} pageNumber={currentPage} isLeft goToEntry={goToEntry} />
+          <div className="absolute inset-0 opacity-40 pointer-events-none z-0" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"n\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23n)\" opacity=\"0.05\"/%3E%3C/svg%3E')" }}></div>
+          
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={currentPage}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="absolute inset-0 px-8 md:px-12 py-8 md:pt-10 md:pb-16 flex flex-col z-10"
+            >
+              <PageContent page={pages[currentPage - 1]} pageNumber={currentPage} isLeft goToEntry={goToEntry} />
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* MAIN/RIGHT PAGE (N) Content */}
